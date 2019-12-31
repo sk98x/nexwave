@@ -1,0 +1,142 @@
+1.Account
+
+import java.util.Scanner;
+class Account
+{
+	int accno,phno;
+	String name;
+	float bal=0;
+	Scanner sc=new Scanner(System.in);
+	void getinput()
+	{
+		System.out.println("Enter the Details:\n");
+		System.out.print("Enter Account Number: ");
+		accno=sc.nextInt();
+		System.out.print("Enter Name: ");
+		name=sc.next();
+		System.out.print("\nEnter Phone Number: ");
+		phno=sc.nextInt();
+	}
+	void deposit(int n)
+	{
+		bal=bal+n;
+	}
+	void withdraw(int n)
+	{
+		bal=bal-n;
+	}
+}
+
+public class D2Pg3
+{
+	public static void main(String args[])
+	{
+		Scanner sc=new Scanner(System.in);
+		Account ac=new Account();
+		char ch='y';
+		int in=0;
+		ac.getinput();
+		while(ch=='y')
+		{
+			System.out.print("\nTransations:\nFor Deposit:1\nFor Withdrawl:2\nExit:3 \nEnter Your Input:");
+			in=sc.nextInt();
+			if(in==1)
+			{
+				System.out.print("Enter the Amount: ");
+				ac.deposit(sc.nextInt());
+			}
+			else if(in==2)
+			{
+				System.out.print("Enter the Amount: ");
+				ac.withdraw(sc.nextInt());
+			}
+			else
+			{
+				break;
+			}
+		}
+			System.out.print("Account Summary:\nUserName: "+ac.name+"\nAccount Number:"+ac.accno+"\nPhone Number: "+ac.phno+"\nBalance: "+ac.bal);
+			ac.deposit(sc.nextInt());
+	}
+}
+
+
+o/p-
+Enter the Details:
+
+Enter Account Number: 1000
+Enter Name: sagar
+
+Enter Phone Number: 1154544
+
+Transations:
+For Deposit:1
+For Withdrawl:2
+Exit:3 
+Enter Your Input:2
+Enter the Amount: 500
+
+Transations:
+For Deposit:1
+For Withdrawl:2
+Exit:3 
+Enter Your Input:1
+Enter the Amount: 1500
+
+Transations:
+For Deposit:1
+For Withdrawl:2
+Exit:3 
+Enter Your Input:3
+Account Summary:
+UserName: sagar
+Account Number:1000
+Phone Number: 1154544
+Balance: 1000.0
+
+
+
+
+2.Inheritance
+
+class parent
+{
+	int varparent=1500;
+}
+class child1 extends parent
+{
+	int varchild1=2000;
+}
+class child2 extends child1
+{
+	
+	int varchild2=365;
+}
+class D2Pg1 
+{
+	public static void main(String arg[])
+	{
+		child2 c=new child2();
+		System.out.println("Child2 variable="+c.varchild2+"\nChild1 variable="+c.varchild1+"\nParent varible="+c.varparent);
+	}
+}
+
+
+
+3.overloading
+
+public class D2Pg2 
+{
+	static int sum(int a,int b)
+	{
+		return(a+b);
+	}
+	static int sum(int a,int b,int c)
+	{
+		return(a+b+c);
+	}
+	public static void main(String arg[])
+	{
+		System.out.println("2+4="+sum(2,4)+"\n2+4+3="+sum(1,4,3));
+	}
+}
