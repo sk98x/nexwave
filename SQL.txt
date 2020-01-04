@@ -1,24 +1,16 @@
+1. TRIGGERS
 
-SQL> SELECT * FROM EMP;
 
-     EMPNO ENAME      JOB              MGR HIREDATE         SAL       COMM     DEPTNO
----------- ---------- --------- ---------- --------- ---------- ---------- ----------
-      7369 SMITH      CLERK           7902 17-DEC-80        800                    20
-      7499 ALLEN      SALESMAN        7698 20-FEB-81       1600        300         30
-      7521 WARD       SALESMAN        7698 22-FEB-81       1250        500         30
-      7566 JONES      MANAGER         7839 02-APR-81       2975                    20
-      7654 MARTIN     SALESMAN        7698 28-SEP-81       1250       1400         30
-      7698 BLAKE      MANAGER         7839 01-MAY-81       2850                    30
-      7782 CLARK      MANAGER         7839 09-JUN-81       2450                    10
-      7788 SCOTT      ANALYST         7566 19-APR-87       3000                    20
-      7839 KING       PRESIDENT            17-NOV-81       5000                    10
-      7844 TURNER     SALESMAN        7698 08-SEP-81       1500          0         30
-      7876 ADAMS      CLERK           7788 23-MAY-87       1100                    20
-      7900 JAMES      CLERK           7698 03-DEC-81        950                    30
-      7902 FORD       ANALYST         7566 03-DEC-81       3000                    20
-      7934 MILLER     CLERK           7782 23-JAN-82       1300                    10
+ create or replace trigger dept before insert on dept
+  2  BEGIN
+  3  IF (TO_CHAR(SYSDATE,'DY') IN ('SAT','SUN')) OR (TO_CHAR(SYSDATE,'HH24:MI')
+  4  NOT BETWEEN '08:00' AND '18:00') THEN
+  5  RAISE_APPLICATION_ERROR(-20500,'YOU MAY INSERT INTO DEPARTMENT TABLE ONLY DURING NORMAL BUISNESS HOURS');
+  6  END IF;
+  7  END;
+  8  /
 
-14 rows selected.
+Trigger created.
 
 SQL> SELECT * FROM DEPT;
 
@@ -29,104 +21,105 @@ SQL> SELECT * FROM DEPT;
         30 SALES          CHICAGO
         40 OPERATIONS     BOSTON
 
-SQL> SELECT COUNT(DISTINCT JOB) FROM EMP;
-
-COUNT(DISTINCTJOB)
-------------------
-                 5
-
-SQL> SELECT SAL FROM EMP;
-
-       SAL
-----------
-       800
-      1600
-      1250
-      2975
-      1250
-      2850
-      2450
-      3000
-      5000
-      1500
-      1100
-       950
-      3000
-      1300
-
-14 rows selected.
-
-SQL> SELECT SUM(SAL) FROM EMP;
-
-  SUM(SAL)
-----------
-     29025
-
-SQL> SELECT MAX(SAL),MIN(SAL),AVG(SAL) FROM EMP;
-
-  MAX(SAL)   MIN(SAL)   AVG(SAL)
----------- ---------- ----------
-      5000        800 2073.21429
+SQL> INSERT INTO DEPT VALUES(60,'CONS','BANGALORE');
+INSERT INTO DEPT VALUES(60,'CONS','BANGALORE')
+            *
+ERROR at line 1:
+ORA-20500: YOU MAY INSERT INTO DEPARTMENT TABLE ONLY DURING NORMAL BUISNESS HOURS
+ORA-06512: at "SCOTT.DEPT", line 4
+ORA-04088: error during execution of trigger 'SCOTT.DEPT'
 
 
-SQL> SELECT SAL FROM EMP WHERE JOB='SALESMAN';
 
-       SAL
-----------
-      1600
-      1250
-      1250
-      1500
+2.
 
-SQL> SELECT MAX(SAL) FROM EMP WHERE JOB='SALESMAN';
 
-  MAX(SAL)
-----------
-      1600
 
-SQL> SELECT AVG(SAL) FROM EMP WHERE DEPTNO=20;
+SQL> CREATE TABLE AUD(UNAME VARCHAR2(30),ID NUMBER(6),OLDLNAME VARCHAR2(25),NEWLNAME VARCHAR2(25),OLDTITLE VARCHAR2(25),NEWTITLE VARCHAR2(25),OLDSAL NUMBER(8,2),NEWSAL NUMBER(8,2));
 
-  AVG(SAL)
-----------
-      2175
+Table created.
 
-SQL> SELECT DISTINCT DEPTNO FROM EMP;
+SQL> DESC AUD
+ Name                                                              Null?    Type
+ ----------------------------------------------------------------- -------- --------------------------------------------
+ UNAME                                                                      VARCHAR2(30)
+ ID                                                                         NUMBER(6)
+ OLDLNAME                                                                   VARCHAR2(25)
+ NEWLNAME                                                                   VARCHAR2(25)
+ OLDTITLE                                                                   VARCHAR2(25)
+ NEWTITLE                                                                   VARCHAR2(25)
+ OLDSAL                                                                     NUMBER(8,2)
+ NEWSAL
 
-    DEPTNO
-----------
-        30
-        20
-        10
 
-SQL> SELECT COUNT(DISTINCT DEPTNO) FROM EMP;
 
-COUNT(DISTINCTDEPTNO)
----------------------
-                    3
 
-SQL> SELECT COUNT(DEPTNO) FROM EMP WHERE DEPTNO=10;
+SQL> CREATE OR REPLACE TRIGGER AUDVAL AFTER DELETE OR INSERT OR UPDATE ON EMP FOR EACH ROW
+  2  BEGIN
+  3  INSERT INTO AUD VALUES(USER,:OLD.EMPNO,:OLD.ENAME,:NEW.ENAME,:OLD.JOB,:NEW.JOB,:OLD.SAL,:NEW.SAL,SYSDATE);
+  4  END;
+  5  /
 
-COUNT(DEPTNO)
--------------
-            3
+Trigger created.
 
-SQL> SELECT COUNT(JOB) FROM EMP WHERE JOB='MANAGER';
+SQL> UPDATE EMP SET ENAME='JJJJ' WHERE ENAME='SCOTT';
 
-COUNT(JOB)
-----------
-         3
-SQL> SELECT DEPTNO,COUNT(DISTINCT DEPTNO) FROM EMP GROUP BY DEPTNO;
+1 row updated.
 
-    DEPTNO COUNT(DISTINCTDEPTNO)
----------- ---------------------
-        30                     1
-        20                     1
-        10                     1
 
-SQL> SELECT DEPTNO,COUNT(DEPTNO) FROM EMP GROUP BY DEPTNO;
+3.
 
-    DEPTNO COUNT(DEPTNO)
----------- -------------
-        30             6
-        20             5
-        10             3
+
+SQL> DECLARE
+  2  CURSOR C1 IS SELECT * FROM DEPT;
+  3  CURSOR C2 (PD NUMBER) IS SELECT * FROM EMP WHERE DEPTNO=PD;
+  4  BEGIN
+  5  FOR VDEP IN C1
+  6  LOOP
+  7  DBMS_OUTPUT.PUT_LINE(VDEP.DEPTNO||' '||VDEP.DNAME);
+  8  FOR EREC IN C2(VDEP.DEPTNO)
+  9  LOOP
+ 10  DBMS_OUTPUT.PUT_LINE(EREC.EMPNO||' '||EREC.ENAME);
+ 11  END LOOP;
+ 12  END LOOP;
+ 13  END;
+ 14  /
+
+PL/SQL procedure successfully completed.
+
+SQL> SET SERVEROUTPUT ON
+SQL> /
+10 ACCOUNTING
+7782 CLARK
+7839 KING
+7934 MILLER
+
+20 RESEARCH
+7369 SMITH
+7566 JONES
+7788 JJJJ
+7876 ADAMS
+7902 FORD
+
+30 SALES
+7499 ALLEN
+7521 WARD
+7654 MARTIN
+7698 BLAKE
+7844 TURNER
+7900 JAMES
+
+40 OPERATIONS
+
+PL/SQL procedure successfully completed.
+
+
+
+5.
+
+CREATE OR REPLACE TRIGGER LOGINGIN AFTER LOGON ON SCHEMA
+BEGIN INSERT INTO LOGDET VALUES(USER,SYSDATE,'LOGGING ON');
+END;
+CREATE OR REPLACE TRIGGER LOGINGOUT BEFORE LOGOFF ON SCHEMA
+BEGIN INSERT INTO LOGDET VALUES(USER,SYSDATE,'LOGGING OFF');
+END;
