@@ -1,0 +1,240 @@
+1.File I/O
+
+package StudentPackage;
+import java.io.*;
+public class Student {
+	public static void main(String arg[])	
+	{
+		  try {
+			FileOutputStream fout=new FileOutputStream("C:\\Users\\lab365\\Desktop\\DBS\\DATA.txt");
+			fout.write(65);
+			fout.close();
+			System.out.print("Success");
+		} 
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+2.
+
+
+package StudentPackage;
+import java.io.*;
+public class Student {
+	public static void main(String arg[])	
+	{
+
+
+		try {
+			FileOutputStream fout=new FileOutputStream("C:\\Users\\lab365\\Desktop\\DBS\\DATA.txt");
+			String s="Hello World!!";
+			byte b[]=s.getBytes();
+			
+			fout.write(b);
+			fout.close();
+			System.out.print("Success");
+		} 
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+
+3.
+
+package StudentPackage;
+import java.io.*;
+public class Student {
+	public static void main(String arg[])	
+	{
+		//Example 1
+		  try {
+			FileInputStream fin=new FileInputStream("C:\\Users\\lab365\\Desktop\\DBS\\DATA.txt");
+			int i=fin.read();
+			System.out.print((char) i);
+
+			fin.close();
+		} 
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+
+4.
+
+
+package StudentPackage;
+import java.io.*;
+public class Student {
+	public static void main(String arg[])	
+	{
+		//Example 1
+		  try {
+			FileInputStream fin=new FileInputStream("C:\\Users\\lab365\\Desktop\\DBS\\DATA.txt");
+			int j=0;
+			while((j=fin.read())!=-1)
+			{
+				System.out.print((char) j);
+			}
+
+
+			fin.close();
+		} 
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+
+5.
+
+
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+
+class student implements Serializable
+{
+	int rollno;
+	public student(int r)
+	{
+		rollno=r;
+	}
+}
+
+
+public class Serializationex {
+	public static void main(String arg[])	
+	{
+		//Example 1
+		  try {
+			FileOutputStream fout=new FileOutputStream("C:\\Users\\lab365\\Desktop\\DBS\\DATA.txt");
+			ObjectOutputStream out=new ObjectOutputStream(fout);
+			student st=new student(120);
+
+			out.writeObject(st);
+			out.close();
+			System.out.print("Success!!");
+			
+			
+		} 
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}
+
+
+
+6.
+
+
+
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+
+class student implements Serializable
+{
+	int rollno;
+	public student(int r)
+	{
+		rollno=r;
+	}
+}
+
+
+public class Serializationex {
+	public static void main(String arg[])	
+	{
+		  try {
+			FileInputStream fin=new FileInputStream("C:\\Users\\lab365\\Desktop\\DBS\\DATA.txt");
+			ObjectInputStream out=new ObjectInputStream(fin);
+			student ss=(student)  out.readObject();
+			System.out.print(ss.rollno);
+			
+			
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}
+
+
+
+7.
+
+
+//package StudentPackage;
+
+//STEP 1. Import required packages
+import java.sql.*;
+
+public class D3pg1 {
+ static final String JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";
+ static final String DB_URL = "jdbc:oracle:thin:@localhost:1521:orcl";
+
+ static final String USER = "scott";
+ static final String PASS = "tiger";
+ 
+ public static void main(String[] args) {
+ Connection conn = null;
+ Statement stmt = null;
+ try{
+    Class.forName("oracle.jdbc.driver.OracleDriver");
+
+    System.out.println("Connecting to database...");
+    conn = DriverManager.getConnection(DB_URL,USER,PASS);
+
+    System.out.println("Creating statement...");
+    stmt = conn.createStatement();
+    String sql;
+    sql = "SELECT * FROM emp";
+    ResultSet rs = stmt.executeQuery(sql);
+    while(rs.next()){
+       int id  = rs.getInt("empno");
+       int sal = rs.getInt("s");
+
+       System.out.print("ID: " + id);
+       System.out.print(", Age: " + sal);
+
+    }
+    
+    rs.close();
+    stmt.close();
+    conn.close();
+ }catch(SQLException se){
+    
+    se.printStackTrace();
+ }catch(Exception e){
+    
+    e.printStackTrace();
+ }finally{
+    
+    try{
+       if(stmt!=null)
+          stmt.close();
+    }catch(SQLException se2){
+    }
+    try{
+       if(conn!=null)
+          conn.close();
+    }catch(SQLException se){
+       se.printStackTrace();
+    }
+ }
+ System.out.println("Goodbye!");
+}
+}
